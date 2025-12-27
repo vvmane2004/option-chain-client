@@ -1,0 +1,108 @@
+<div class="chart-price-put">
+  <!-- Chart Header -->
+  <div class="chart-header">
+    <h3>Price with TTM Squeeze</h3>
+    <div class="chart-actions">
+      <button class="refresh-btn" (click)="loadData()" [disabled]="loading">
+        <span *ngIf="loading" class="loading-spinner"></span>
+        {{ loading ? 'Loading...' : 'Refresh' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading underlying price data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadData()">Retry</button>
+  </div>
+
+  <!-- No Data State -->
+  <div class="no-data-state" *ngIf="!loading && !error && (!data || data.length === 0)">
+    <div class="no-data-icon">📈</div>
+    <p>No underlying price data available</p>
+  </div>
+
+  <!-- Chart Canvas -->
+  <div class="chart-wrapper" *ngIf="!loading && !error && data && data.length > 0">
+    <canvas #chartCanvas></canvas>
+  </div>
+
+      <!-- TTM Squeeze Histogram -->
+      <div class="ttm-squeeze-histogram" *ngIf="!loading && !error && data && data.length > 0">
+        <div class="histogram-header">
+          <h4>TTM Squeeze Histogram</h4>
+          <div class="histogram-legend">
+            <span class="legend-item">
+              <span class="legend-color positive"></span>
+              Positive Momentum
+            </span>
+            <span class="legend-item">
+              <span class="legend-color negative"></span>
+              Negative Momentum
+            </span>
+          </div>
+        </div>
+        <div class="histogram-chart">
+          <canvas #histogramCanvas></canvas>
+        </div>
+      </div>
+
+      <!-- DMI Chart -->
+      <div class="dmi-chart" *ngIf="!loading && !error && data && data.length > 0">
+        <div class="dmi-header">
+          <h4>DMI (14) - Directional Movement Indicator</h4>
+          <div class="dmi-legend">
+            <span class="legend-item">
+              <span class="legend-color plus-di"></span>
+              +DI (Bullish)
+            </span>
+            <span class="legend-item">
+              <span class="legend-color minus-di"></span>
+              -DI (Bearish)
+            </span>
+            <span class="legend-item">
+              <span class="legend-color adx"></span>
+              ADX (Strength)
+            </span>
+          </div>
+        </div>
+        <div class="dmi-chart-canvas">
+          <canvas #dmiCanvas></canvas>
+        </div>
+      </div>
+
+  <!-- Data Summary -->
+  <div class="data-summary" *ngIf="data && data.length > 0">
+    <div class="summary-item">
+      <span class="label">Data Points:</span>
+      <span class="value">{{ data.length }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Price Range:</span>
+      <span class="value">{{ getPriceRange() }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Date Range:</span>
+      <span class="value">{{ getDateRange() }}</span>
+    </div>
+    <div class="summary-item ttm-squeeze-info">
+      <span class="label">TTM Squeeze (20,1.5,2.0):</span>
+      <span class="value">{{ getTTMSqueezeInfo() }}</span>
+    </div>
+        <div class="summary-item demand-supply-info">
+          <span class="label">Demand & Supply Zones:</span>
+          <span class="value">{{ getDemandSupplyZonesInfo() }}</span>
+        </div>
+        <div class="summary-item dmi-info">
+          <span class="label">DMI (14):</span>
+          <span class="value">{{ getDMIInfo() }}</span>
+        </div>
+      </div>
+    </div>

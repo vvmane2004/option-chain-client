@@ -1,0 +1,34 @@
+<div class="main-page">
+
+  
+  <div class="page-content">
+    <!-- Left Column Component -->
+    <app-left-column [style.width]="leftColumnCollapsed ? '60px' : '10%'"
+      [symbols]="symbols"
+      [expirations]="expirations"
+      [loadingSymbols]="loadingSymbols"
+      [loadingExpirations]="loadingExpirations"
+      [loadingInfo]="loadingInfo"
+      [selectedSymbol]="selectedSymbol"
+      [selectedExpiration]="selectedExpiration"
+      [selectedDatapoint]="selectedDatapoint"
+      [errorMessage]="errorMessage"
+      (symbolChange)="onSymbolChange($event)"
+      (expirationChange)="onExpirationChange($event)"
+      (datapointChange)="onDatapointChange($event)"
+      (clearSelections)="onClearSelections()"
+      (loadInfo)="onLoadInfo()"
+      (collapseChange)="onLeftColumnCollapseChange($event)">
+    </app-left-column>
+
+    <!-- Right Column Component -->
+    <app-right-column [style.width]="leftColumnCollapsed ? 'calc(100% - 60px)' : '90%'"
+      [selectedSymbol]="selectedSymbol"
+      [selectedExpiration]="selectedExpiration"
+      [selectedDatapoint]="selectedDatapoint"
+      [loadingData]="loadingData"
+      [optionChainData]="optionChainData"
+      [chartLoadTrigger]="chartLoadTrigger">
+    </app-right-column>
+  </div>
+</div> 

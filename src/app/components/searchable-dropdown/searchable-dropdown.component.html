@@ -1,0 +1,54 @@
+<div class="searchable-dropdown" [class.disabled]="disabled">
+  <label *ngIf="label" class="dropdown-label">{{ label }}</label>
+  
+  <div class="dropdown-container" (click)="toggleDropdown()">
+    <div class="dropdown-input">
+      <input
+        type="text"
+        [placeholder]="placeholder"
+        [value]="searchTerm"
+        (input)="onSearchChange($any($event.target).value)"
+        (blur)="onBlur()"
+        (keydown)="onKeyDown($event)"
+        [disabled]="disabled"
+        class="search-input"
+        autocomplete="off"
+      />
+      <div class="dropdown-arrow" [class.open]="isOpen">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+    
+    <div class="dropdown-options" *ngIf="isOpen && filteredOptions.length > 0">
+      <div class="option-item" 
+           *ngFor="let option of filteredOptions" 
+           (click)="selectOption(option)"
+           [class.selected]="option.value === selectedValue">
+        {{ option.label }}
+      </div>
+    </div>
+    
+    <div class="dropdown-options empty" *ngIf="isOpen && filteredOptions.length === 0">
+      <div class="option-item no-results">
+        No results found
+      </div>
+    </div>
+    
+    <div class="loading-indicator" *ngIf="loading">
+      <div class="spinner"></div>
+      <span>Loading...</span>
+    </div>
+  </div>
+  
+  <button *ngIf="selectedValue" 
+          type="button" 
+          class="clear-button" 
+          (click)="clearSelection()"
+          title="Clear selection">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <path d="M9 3L3 9M3 3L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</div> 

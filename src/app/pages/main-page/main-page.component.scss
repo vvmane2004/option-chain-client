@@ -1,0 +1,22 @@
+.main-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+
+  .page-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    width: 100%;
+    transition: all 0.3s ease;
+
+    app-left-column {
+      transition: width 0.3s ease;
+    }
+
+    app-right-column {
+      transition: width 0.3s ease;
+    }
+  }
+} 

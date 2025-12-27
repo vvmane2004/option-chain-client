@@ -1,0 +1,383 @@
+.chart-price-put {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chart-header {
+  padding: 16px 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    color: #374151;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .chart-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .refresh-btn {
+    padding: 6px 12px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: #2563eb;
+    }
+
+    &:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.loading-state,
+.error-state,
+.no-data-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+
+  .loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #e5e7eb;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .error-icon,
+  .no-data-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0 0 16px 0;
+    color: #6b7280;
+    font-size: 14px;
+  }
+
+  .retry-btn {
+    padding: 8px 16px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: #dc2626;
+    }
+  }
+}
+
+.chart-wrapper {
+  flex: 1;
+  padding: 20px;
+  position: relative;
+  min-height: 400px;
+
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+}
+
+// TTM Squeeze Histogram Styles
+.ttm-squeeze-histogram {
+  margin: 0 20px 20px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+
+  .histogram-header {
+    padding: 12px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h4 {
+      margin: 0;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .histogram-legend {
+      display: flex;
+      gap: 16px;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #6b7280;
+
+        .legend-color {
+          width: 12px;
+          height: 12px;
+          border-radius: 2px;
+
+          &.positive {
+            background-color: #22c55e;
+          }
+
+          &.negative {
+            background-color: #ef4444;
+          }
+        }
+      }
+    }
+  }
+
+  .histogram-chart {
+    height: 200px;
+    padding: 10px;
+    position: relative;
+  }
+}
+
+// DMI Chart Styles
+.dmi-chart {
+  margin: 0 20px 20px 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+
+  .dmi-header {
+    padding: 12px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h4 {
+      margin: 0;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .dmi-legend {
+      display: flex;
+      gap: 16px;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #6b7280;
+
+        .legend-color {
+          width: 12px;
+          height: 12px;
+          border-radius: 2px;
+
+          &.plus-di {
+            background-color: #22c55e;
+          }
+
+          &.minus-di {
+            background-color: #ef4444;
+          }
+
+          &.adx {
+            background-color: #8b5cf6;
+          }
+        }
+      }
+    }
+  }
+
+  .dmi-chart-canvas {
+    height: 200px;
+    padding: 10px;
+    position: relative;
+  }
+}
+
+.data-summary {
+  padding: 12px 20px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  flex-wrap: wrap;
+
+  .summary-item {
+    display: flex;
+    gap: 8px;
+
+    .label {
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .value {
+      color: #374151;
+      font-weight: 600;
+    }
+
+    &.ttm-squeeze-info {
+      flex: 1;
+      min-width: 100%;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e5e7eb;
+
+      .label {
+        color: #06b6d4;
+        font-weight: 600;
+      }
+
+      .value {
+        color: #6b7280;
+        font-size: 12px;
+        font-family: 'Courier New', monospace;
+      }
+    }
+
+    &.demand-supply-info {
+      flex: 1;
+      min-width: 100%;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e5e7eb;
+
+      .label {
+        color: #f59e0b;
+        font-weight: 600;
+      }
+
+      .value {
+        color: #6b7280;
+        font-size: 12px;
+        font-family: 'Courier New', monospace;
+      }
+    }
+
+    &.dmi-info {
+      flex: 1;
+      min-width: 100%;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e5e7eb;
+
+      .label {
+        color: #8b5cf6; // Purple color for DMI
+        font-weight: 600;
+      }
+
+      .value {
+        color: #6b7280;
+        font-size: 12px;
+        font-family: 'Courier New', monospace;
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg);   }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .chart-header {
+    padding: 12px 16px;
+
+    h3 {
+      font-size: 14px;
+    }
+  }
+
+  .chart-wrapper {
+    padding: 16px;
+    min-height: 300px;
+  }
+
+  .ttm-squeeze-histogram {
+    margin: 0 16px 16px 16px;
+
+    .histogram-header {
+      padding: 10px 16px;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+
+      .histogram-legend {
+        gap: 12px;
+      }
+    }
+
+    .histogram-chart {
+      height: 150px;
+      padding: 8px;
+    }
+  }
+
+  .dmi-chart {
+    margin: 0 16px 16px 16px;
+
+    .dmi-header {
+      padding: 10px 16px;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+
+      .dmi-legend {
+        gap: 12px;
+      }
+    }
+
+    .dmi-chart-canvas {
+      height: 150px;
+      padding: 8px;
+    }
+  }
+
+  .data-summary {
+    padding: 12px 16px;
+    gap: 16px;
+
+    .summary-item {
+      font-size: 12px;
+    }
+  }
+}

@@ -1,0 +1,239 @@
+.left-column {
+  width: 90%;
+  padding: 5px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #dee2e6;
+  height: 100%;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+  position: relative;
+
+  &.collapsed {
+    width: 60px;
+    padding: 10px 5px;
+    overflow: hidden;
+  }
+
+  .collapse-toggle {
+    position: absolute;
+    top: 10px;
+    right: -15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      background-color: #0056b3;
+      transform: scale(1.1);
+    }
+
+    .toggle-icon {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .toggle-text {
+      position: absolute;
+      left: 35px;
+      white-space: nowrap;
+      background-color: #007bff;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover .toggle-text {
+      opacity: 1;
+    }
+  }
+
+  .collapsible-content {
+    transition: all 0.3s ease;
+    opacity: 1;
+    transform: translateX(0);
+
+    &.hidden {
+      opacity: 0;
+      transform: translateX(-20px);
+      pointer-events: none;
+    }
+  }
+
+  .collapsed-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-top: 20px;
+
+    .collapsed-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+
+      .symbol-badge {
+        background-color: #007bff;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 15px;
+        font-size: 12px;
+        text-align: center;
+        min-width: 40px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .expiration-badge {
+        background-color: #6c757d;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        text-align: center;
+        min-width: 35px;
+      }
+    }
+  }
+
+  .search-controls {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .dropdown-section {
+      .dropdown-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #495057;
+      }
+    }
+
+    .action-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+
+      .btn {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+        min-height: 40px;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        &:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background-color: #0056b3;
+        }
+
+        &:active:not(:disabled) {
+          background-color: #004085;
+        }
+      }
+
+      .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+
+        &:hover:not(:disabled) {
+          background-color: #545b62;
+        }
+
+        &:active:not(:disabled) {
+          background-color: #3d4449;
+        }
+      }
+    }
+
+    .error-message {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #f5c6cb;
+      margin-top: 16px;
+
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+
+    .selection-summary {
+      background-color: #e7f3ff;
+      border: 1px solid #b3d9ff;
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 20px;
+
+      h4 {
+        margin: 0 0 12px 0;
+        color: #0056b3;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 8px 0;
+        color: #0056b3;
+        font-size: 14px;
+
+        strong {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .left-column {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #dee2e6;
+    height: auto;
+    overflow-y: visible;
+  }
+} 

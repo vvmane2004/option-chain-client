@@ -1,0 +1,120 @@
+<div class="chart-price-call">
+  <!-- Chart Header -->
+  <div class="chart-header">
+    <h3>Price with Bollinger Bands & Keltner Channels</h3>
+    <div class="chart-actions">
+      <button class="refresh-btn" (click)="loadData()" [disabled]="loading">
+        <span *ngIf="loading" class="loading-spinner"></span>
+        {{ loading ? 'Loading...' : 'Refresh' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading underlying price data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadData()">Retry</button>
+  </div>
+
+  <!-- No Data State -->
+  <div class="no-data-state" *ngIf="!loading && !error && (!data || data.length === 0)">
+    <div class="no-data-icon">📈</div>
+    <p>No underlying price data available</p>
+  </div>
+
+  <!-- Chart Canvas -->
+  <div class="chart-wrapper" *ngIf="!loading && !error && data && data.length > 0">
+    <canvas #chartCanvas></canvas>
+  </div>
+
+  <!-- RSI Chart -->
+  <div class="rsi-chart" *ngIf="!loading && !error && data && data.length > 0">
+    <div class="rsi-header">
+      <h4>RSI (14) - Relative Strength Index</h4>
+      <div class="rsi-legend">
+        <span class="legend-item">
+          <span class="legend-color overbought"></span>
+          Overbought (≥70)
+        </span>
+        <span class="legend-item">
+          <span class="legend-color oversold"></span>
+          Oversold (≤30)
+        </span>
+        <span class="legend-item">
+          <span class="legend-color neutral"></span>
+          Neutral (30-70)
+        </span>
+      </div>
+    </div>
+    <div class="rsi-chart-canvas">
+      <canvas #rsiCanvas></canvas>
+    </div>
+  </div>
+
+  <!-- MACD Chart -->
+  <div class="macd-chart" *ngIf="!loading && !error && data && data.length > 0">
+    <div class="macd-header">
+      <h4>MACD (12,26,9) - Moving Average Convergence Divergence</h4>
+      <div class="macd-legend">
+        <span class="legend-item">
+          <span class="legend-color macd-line"></span>
+          MACD Line
+        </span>
+        <span class="legend-item">
+          <span class="legend-color signal-line"></span>
+          Signal Line
+        </span>
+        <span class="legend-item">
+          <span class="legend-color histogram-positive"></span>
+          Histogram (+)
+        </span>
+        <span class="legend-item">
+          <span class="legend-color histogram-negative"></span>
+          Histogram (-)
+        </span>
+      </div>
+    </div>
+    <div class="macd-chart-canvas">
+      <canvas #macdCanvas></canvas>
+    </div>
+  </div>
+
+  <!-- Data Summary -->
+  <div class="data-summary" *ngIf="data && data.length > 0">
+    <div class="summary-item">
+      <span class="label">Data Points:</span>
+      <span class="value">{{ data.length }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Price Range:</span>
+      <span class="value">{{ getPriceRange() }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Date Range:</span>
+      <span class="value">{{ getDateRange() }}</span>
+    </div>
+    <div class="summary-item bollinger-info">
+      <span class="label">Bollinger Bands (20,2):</span>
+      <span class="value">{{ getBollingerBandsInfo() }}</span>
+    </div>
+    <div class="summary-item keltner-info">
+      <span class="label">Keltner Channels (20,2):</span>
+      <span class="value">{{ getKeltnerChannelsInfo() }}</span>
+    </div>
+    <div class="summary-item macd-info">
+      <span class="label">MACD (12,26,9):</span>
+      <span class="value">{{ getMACDInfo() }}</span>
+    </div>
+    <div class="summary-item rsi-info">
+      <span class="label">RSI (14):</span>
+      <span class="value">{{ getRSIInfo() }}</span>
+    </div>
+  </div>
+</div>

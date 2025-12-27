@@ -1,0 +1,75 @@
+<div class="left-column" [class.collapsed]="collapsed">
+  <!-- Collapse Toggle Button -->
+  <div class="collapse-toggle" (click)="toggleCollapse()">
+    <span class="toggle-icon">{{ collapsed ? '▶' : '◀' }}</span>
+    <span class="toggle-text">{{ collapsed ? 'Expand' : 'Collapse' }}</span>
+  </div>
+
+  <!-- Collapsible Content -->
+  <div class="collapsible-content" [class.hidden]="collapsed">
+    <div class="search-controls">
+      <div class="dropdown-section">
+        <app-searchable-dropdown
+          [options]="symbols"
+          [placeholder]="'Search symbols...'"
+          [label]="'Symbol'"
+          [loading]="loadingSymbols"
+          [selectedValue]="selectedSymbol"
+          (selectionChange)="onSymbolChange($event)">
+        </app-searchable-dropdown>
+      </div>
+      <div class="dropdown-section">
+        <app-searchable-dropdown
+          [options]="expirations"
+          [placeholder]="'Search expirations...'"
+          [label]="'Expiration'"
+          [loading]="loadingExpirations"
+          [selectedValue]="selectedExpiration"
+          [disabled]="!selectedSymbol"
+          (selectionChange)="onExpirationChange($event)">
+        </app-searchable-dropdown>
+      </div>
+      <div class="dropdown-section">
+        <app-searchable-dropdown
+          [options]="datapoints"
+          [placeholder]="'Select datapoint...'"
+          [label]="'Datapoint'"
+          [loading]="false"
+          [selectedValue]="selectedDatapoint"
+          [disabled]="!selectedSymbol || !selectedExpiration"
+          (selectionChange)="onDatapointChange($event)">
+        </app-searchable-dropdown>
+      </div>
+      <div class="action-buttons">
+        <button class="btn btn-primary" (click)="onLoadInfo()" [disabled]="!selectedSymbol || !selectedExpiration">
+          <span *ngIf="!loadingInfo">Load Info</span>
+          <span *ngIf="loadingInfo">Loading...</span>
+        </button>
+        <button class="btn btn-secondary" (click)="onClearSelections()">
+          Clear Selections
+        </button>
+      </div>
+      <div class="error-message" *ngIf="errorMessage">
+        <p>{{ errorMessage }}</p>
+      </div>
+      <div class="selection-summary" *ngIf="selectedSymbol || selectedExpiration || selectedDatapoint">
+        <h4>Current Selection:</h4>
+        <p *ngIf="selectedSymbol"><strong>Symbol:</strong> {{ selectedSymbol }}</p>
+        <p *ngIf="selectedExpiration"><strong>Expiration:</strong> {{ selectedExpiration }}</p>
+        <p *ngIf="selectedDatapoint"><strong>Datapoint:</strong> {{ getDatapointLabel(selectedDatapoint) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsed State Content -->
+  <div class="collapsed-content" *ngIf="collapsed">
+    <div class="collapsed-info">
+      <div class="symbol-badge" *ngIf="selectedSymbol">
+        <strong>{{ selectedSymbol }}</strong>
+      </div>
+      <div class="expiration-badge" *ngIf="selectedExpiration">
+        {{ selectedExpiration | date:'MMM d' }}
+      </div>
+    </div>
+  </div>
+</div> 

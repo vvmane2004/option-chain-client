@@ -1,0 +1,119 @@
+<div class="right-column">
+  <div class="content-area">
+    <!-- Welcome Message -->
+    <div class="welcome-message" *ngIf="showWelcomeMessage">
+      <div class="welcome-content">
+        <h2>Welcome to OptionChainAnalysis</h2>
+        <p>Please select a symbol and expiration date from the left panel to view option chain data.</p>
+        <div class="welcome-steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-text">Choose a symbol from the dropdown</div>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-text">Select an expiration date</div>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-text">View detailed option chain data</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Option Chain Data Area -->
+    <div class="option-chain-data" *ngIf="showDataArea">
+      <!-- No Data State -->
+      <div class="no-data" *ngIf="!loadingData && !optionChainData && hasSelection && !showOpenInterestCharts && !showPriceCharts && !showPremiumCharts && !showVolumeCharts">
+        <p>No option chain data available for the selected symbol and expiration.</p>
+      </div>
+    </div>
+    
+    <!-- Open Interest Charts -->
+    <div class="open-interest-charts" *ngIf="showOpenInterestCharts">
+      <div class="charts-container">
+        <div class="chart-wrapper call-chart">
+          <app-chart-openinterest 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [side]="'call'"
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-openinterest>
+        </div>
+        <div class="chart-wrapper put-chart">
+          <app-chart-openinterest 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [side]="'put'"
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-openinterest>
+        </div>
+      </div>
+    </div>
+
+    <!-- Price Charts -->
+    <div class="price-charts" *ngIf="showPriceCharts">
+      <div class="charts-container">
+        <div class="chart-wrapper call-chart">
+          <app-chart-price-call 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-price-call>
+        </div>
+        <div class="chart-wrapper put-chart">
+          <app-chart-price-put 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-price-put>
+        </div>
+      </div>
+    </div>
+
+    <!-- Premium Charts -->
+    <div class="premium-charts" *ngIf="showPremiumCharts">
+      <div class="charts-container">
+        <div class="chart-wrapper call-chart">
+          <app-chart-premium 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [side]="'call'"
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-premium>
+        </div>
+        <div class="chart-wrapper put-chart">
+          <app-chart-premium 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [side]="'put'"
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-premium>
+        </div>
+      </div>
+    </div>
+
+    <!-- Volume Charts -->
+    <div class="volume-charts" *ngIf="showVolumeCharts">
+      <div class="charts-container">
+        <div class="chart-wrapper call-chart">
+          <app-chart-volume 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [side]="'call'"
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-volume>
+        </div>
+        <div class="chart-wrapper put-chart">
+          <app-chart-volume 
+            [symbol]="selectedSymbol" 
+            [expiration]="selectedExpiration" 
+            [side]="'put'"
+            [loadTrigger]="chartLoadTrigger">
+          </app-chart-volume>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

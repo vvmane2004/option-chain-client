@@ -1,0 +1,55 @@
+<div class="chart-container">
+  <div class="chart-header">
+    <h3>{{ side?.toUpperCase() }} Volume Chart</h3>
+    <div class="chart-info" *ngIf="symbol && expiration">
+      <span class="symbol">{{ symbol }}</span>
+      <span class="expiration">{{ expiration }}</span>
+    </div>
+  </div>
+
+  <div class="chart-content">
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading volume data...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" *ngIf="error && !loading">
+      <div class="error-icon">⚠️</div>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="loadData()">Retry</button>
+    </div>
+
+    <!-- No Data State -->
+    <div class="no-data-state" *ngIf="!loading && !error && (!data || data.length === 0)">
+      <div class="no-data-icon">📊</div>
+      <p>No volume data available</p>
+    </div>
+
+    <!-- Chart Canvas -->
+    <div class="chart-wrapper" *ngIf="!loading && !error && data && data.length > 0">
+      <canvas #chartCanvas></canvas>
+    </div>
+  </div>
+
+  <!-- Data Summary -->
+  <div class="data-summary" *ngIf="data && data.length > 0">
+    <div class="summary-item">
+      <span class="label">Data Points:</span>
+      <span class="value">{{ data.length }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Strikes:</span>
+      <span class="value">{{ getStrikeCount() }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Volume Range:</span>
+      <span class="value">{{ getVolumeRange() }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">Date Range:</span>
+      <span class="value">{{ getDateRange() }}</span>
+    </div>
+  </div>
+</div>
