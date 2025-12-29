@@ -102,8 +102,8 @@ export class ChartOpeninterestComponent implements OnInit, OnChanges, AfterViewI
         responsive: true,
         maintainAspectRatio: false,
         interaction: {
-          mode: 'index',
-          intersect: false,
+          mode: 'nearest',
+          intersect: true,
         },
         plugins: {
           title: {
@@ -207,11 +207,11 @@ export class ChartOpeninterestComponent implements OnInit, OnChanges, AfterViewI
         data: data,
         borderColor: colors[index],
         backgroundColor: colors[index] + '20', // Add transparency
-        borderWidth: 2,
+        borderWidth: 1,
         fill: false,
         tension: 0.4,
-        pointRadius: 3,
-        pointHoverRadius: 5
+        pointRadius: 1,
+        pointHoverRadius: 2
       });
     });
 

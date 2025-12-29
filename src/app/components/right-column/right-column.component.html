@@ -56,18 +56,18 @@
     <div class="price-charts" *ngIf="showPriceCharts">
       <div class="charts-container">
         <div class="chart-wrapper call-chart">
-          <app-chart-price-call 
+          <app-chart-price-container-1 
             [symbol]="selectedSymbol" 
             [expiration]="selectedExpiration" 
             [loadTrigger]="chartLoadTrigger">
-          </app-chart-price-call>
+          </app-chart-price-container-1>
         </div>
         <div class="chart-wrapper put-chart">
-          <app-chart-price-put 
+          <app-chart-price-container-2 
             [symbol]="selectedSymbol" 
             [expiration]="selectedExpiration" 
             [loadTrigger]="chartLoadTrigger">
-          </app-chart-price-put>
+          </app-chart-price-container-2>
         </div>
       </div>
     </div>

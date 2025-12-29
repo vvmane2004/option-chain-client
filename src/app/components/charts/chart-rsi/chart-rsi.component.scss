@@ -1,0 +1,80 @@
+.rsi-chart {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+
+  .rsi-header {
+    padding: 12px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h4 {
+      margin: 0;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .rsi-legend {
+      display: flex;
+      gap: 16px;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #6b7280;
+
+        .legend-color {
+          width: 12px;
+          height: 12px;
+          border-radius: 2px;
+
+          &.overbought {
+            background-color: #ef4444;
+          }
+
+          &.oversold {
+            background-color: #22c55e;
+          }
+
+          &.neutral {
+            background-color: #8b5cf6;
+          }
+        }
+      }
+    }
+  }
+
+  .rsi-chart-canvas {
+    height: 200px;
+    padding: 10px;
+    position: relative;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .rsi-chart {
+    .rsi-header {
+      padding: 10px 16px;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+
+      .rsi-legend {
+        gap: 12px;
+      }
+    }
+
+    .rsi-chart-canvas {
+      height: 150px;
+      padding: 8px;
+    }
+  }
+}
+

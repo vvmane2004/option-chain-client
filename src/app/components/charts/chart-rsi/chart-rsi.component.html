@@ -1,0 +1,23 @@
+<div class="rsi-chart">
+  <div class="rsi-header">
+    <h4>RSI ({{ period }}, Wilder's) - Relative Strength Index</h4>
+    <div class="rsi-legend">
+      <span class="legend-item">
+        <span class="legend-color overbought"></span>
+        Overbought (≥{{ overbought }})
+      </span>
+      <span class="legend-item">
+        <span class="legend-color oversold"></span>
+        Oversold (≤{{ oversold }})
+      </span>
+      <span class="legend-item">
+        <span class="legend-color neutral"></span>
+        Neutral ({{ oversold }}-{{ overbought }})
+      </span>
+    </div>
+  </div>
+  <div class="rsi-chart-canvas">
+    <canvas #rsiCanvas></canvas>
+  </div>
+</div>
+

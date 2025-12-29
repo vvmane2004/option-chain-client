@@ -1,0 +1,26 @@
+<div class="dmi-chart">
+  <div class="dmi-header">
+    <h4>DMI ({{ length }}) - Directional Movement Index</h4>
+    <div class="dmi-legend">
+      <span class="legend-item">
+        <span class="legend-color plus-di"></span>
+        DI+ (Bullish)
+      </span>
+      <span class="legend-item">
+        <span class="legend-color minus-di"></span>
+        DI- (Bearish)
+      </span>
+      <span class="legend-item">
+        <span class="legend-color adx"></span>
+        ADX (Trend Strength)
+      </span>
+    </div>
+  </div>
+  <div class="dmi-chart-canvas">
+    <canvas #dmiCanvas></canvas>
+  </div>
+  <div class="dmi-info">
+    <span class="info-text">{{ getDMIInfo() }}</span>
+  </div>
+</div>
+

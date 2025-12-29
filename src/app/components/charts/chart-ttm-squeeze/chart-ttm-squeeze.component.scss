@@ -1,0 +1,126 @@
+.ttm-squeeze-chart {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+
+  .histogram-header {
+    padding: 12px 20px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h4 {
+      margin: 0;
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .histogram-legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+
+      .legend-separator {
+        color: #d1d5db;
+        font-weight: 300;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        color: #6b7280;
+
+        .legend-color {
+          width: 12px;
+          height: 12px;
+          border-radius: 2px;
+
+          &.negative-down {
+            background-color: #F44336; // Red
+          }
+
+          &.negative-up {
+            background-color: #FFEB3B; // Yellow
+          }
+
+          &.positive-down {
+            background-color: #00BCD4; // Cyan
+          }
+
+          &.positive-up {
+            background-color: #2196F3; // Blue
+          }
+        }
+
+        .legend-dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+
+          &.squeeze-on {
+            background-color: #F44336; // Red
+          }
+
+          &.squeeze-off {
+            background-color: #4CAF50; // Green
+          }
+        }
+      }
+    }
+  }
+
+  .histogram-chart {
+    height: 200px;
+    padding: 10px;
+    position: relative;
+  }
+
+  .ttm-info {
+    padding: 8px 20px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+
+    .info-text {
+      font-size: 12px;
+      font-family: 'Courier New', Consolas, monospace;
+      color: #6b7280;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .ttm-squeeze-chart {
+    .histogram-header {
+      padding: 10px 16px;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+
+      .histogram-legend {
+        gap: 8px;
+      }
+    }
+
+    .histogram-chart {
+      height: 150px;
+      padding: 8px;
+    }
+
+    .ttm-info {
+      padding: 8px 16px;
+
+      .info-text {
+        font-size: 11px;
+      }
+    }
+  }
+}
+

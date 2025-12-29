@@ -102,8 +102,8 @@ export class ChartVolumeComponent implements OnInit, OnChanges, AfterViewInit {
         responsive: true,
         maintainAspectRatio: false,
         interaction: {
-          mode: 'index',
-          intersect: false,
+          mode: 'nearest',
+          intersect: true,
         },
         plugins: {
           title: {

@@ -1,0 +1,27 @@
+<div class="macd-chart">
+  <div class="macd-header">
+    <h4>MACD ({{ fastPeriod }},{{ slowPeriod }},{{ signalPeriod }}) - Moving Average Convergence Divergence</h4>
+    <div class="macd-legend">
+      <span class="legend-item">
+        <span class="legend-color macd-line"></span>
+        MACD Line
+      </span>
+      <span class="legend-item">
+        <span class="legend-color signal-line"></span>
+        Signal Line
+      </span>
+      <span class="legend-item">
+        <span class="legend-color histogram-positive"></span>
+        Histogram (+)
+      </span>
+      <span class="legend-item">
+        <span class="legend-color histogram-negative"></span>
+        Histogram (-)
+      </span>
+    </div>
+  </div>
+  <div class="macd-chart-canvas">
+    <canvas #macdCanvas></canvas>
+  </div>
+</div>
+

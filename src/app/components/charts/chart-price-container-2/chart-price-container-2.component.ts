@@ -4,34 +4,37 @@ import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { OptionChainService } from '../../../services/option-chain.service';
 import { OptionChainUnderlyingPrice } from '../../../interfaces/option-chain.interface';
+import { ChartDmiComponent } from '../chart-dmi/chart-dmi.component';
+import { ChartTtmSqueezeComponent, TTMSqueezeData } from '../chart-ttm-squeeze/chart-ttm-squeeze.component';
 
 Chart.register(...registerables, zoomPlugin);
 
 @Component({
-  selector: 'app-chart-price-put',
+  selector: 'app-chart-price-container-2',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './chart-price-put.component.html',
-  styleUrl: './chart-price-put.component.scss'
+  imports: [CommonModule, ChartDmiComponent, ChartTtmSqueezeComponent],
+  templateUrl: './chart-price-container-2.component.html',
+  styleUrl: './chart-price-container-2.component.scss'
 })
-export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class ChartPriceContainer2Component implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @Input() symbol: string | null = null;
   @Input() expiration: string | null = null;
   @Input() loadTrigger: boolean = false;
   
   @ViewChild('chartCanvas', { static: false }) chartCanvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('histogramCanvas', { static: false }) histogramCanvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('dmiCanvas', { static: false }) dmiCanvas!: ElementRef<HTMLCanvasElement>;
   
   chart: Chart | null = null;
-  histogramChart: Chart | null = null;
-  dmiChart: Chart | null = null;
   loading = false;
   error: string | null = null;
   data: OptionChainUnderlyingPrice[] = [];
-  ttmSqueezeData: any = null;
+  ttmSqueezeData: TTMSqueezeData | null = null;
   demandSupplyZones: { demand: any[], supply: any[] } = { demand: [], supply: [] };
-  dmiData: { plusDI: number[], minusDI: number[], adx: number[] } = { plusDI: [], minusDI: [], adx: [] };
+  
+  // Expose data for child components
+  priceData: number[] = [];
+  chartDates: string[] = [];
+  dmiInfo: string = 'N/A';
+  ttmSqueezeInfo: string = 'N/A';
 
   constructor(private optionChainService: OptionChainService) {}
 
@@ -91,25 +94,29 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
 
     const groupedData = this.groupDataByDate();
     const dates = Object.keys(groupedData).sort();
-    const priceData = dates.map(date => groupedData[date].avgPrice);
+    const priceDataArr = dates.map(date => groupedData[date].avgPrice);
+    
+    // Expose data for child components
+    this.priceData = priceDataArr;
+    this.chartDates = dates;
 
     const datasets: any[] = [
       {
         label: 'Underlying Price',
-        data: priceData,
+        data: priceDataArr,
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        borderWidth: 3,
+        borderWidth: 1,
         fill: false,
         tension: 0.4,
-        pointRadius: 4,
-        pointHoverRadius: 6,
+        pointRadius: 0,
+        pointHoverRadius: 2,
         order: 1
       }
     ];
 
     // Add TTM Squeeze for puts
-    const ttmSqueeze = this.calculateTTMSqueeze(priceData, 20, 1.5, 2.0);
+    const ttmSqueeze = this.calculateTTMSqueeze(priceDataArr, 20, 1.5, 2.0);
     
     // Add Keltner Channels (TTM Squeeze bands)
     datasets.push(
@@ -143,7 +150,7 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
     this.ttmSqueezeData = ttmSqueeze;
 
     // Calculate Demand and Supply zones BEFORE creating the chart
-    this.calculateDemandSupplyZones(priceData, dates);
+    this.calculateDemandSupplyZones(priceDataArr, dates);
 
     // Add Demand and Supply zones as horizontal lines
     this.addDemandSupplyZonesToChart(datasets, dates);
@@ -217,108 +224,6 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
     };
 
     this.chart = new Chart(this.chartCanvas.nativeElement, config);
-
-    // Create TTM Squeeze histogram
-    if (this.ttmSqueezeData) {
-      setTimeout(() => this.createHistogramChart(), 100);
-    }
-
-    // Calculate and create DMI chart
-    this.calculateDMI(priceData, 14);
-    setTimeout(() => this.createDMIChart(), 300);
-  }
-
-  private createHistogramChart(): void {
-    if (this.histogramChart) {
-      this.histogramChart.destroy();
-    }
-
-    if (!this.ttmSqueezeData || !this.histogramCanvas || !this.histogramCanvas.nativeElement) {
-      console.warn('Histogram canvas or TTM Squeeze data not available');
-      return;
-    }
-
-    const groupedData = this.groupDataByDate();
-    const dates = Object.keys(groupedData).sort();
-
-    const histogramConfig: ChartConfiguration = {
-      type: 'bar',
-      data: {
-        labels: dates.map((date: string) => new Date(date).toLocaleDateString()),
-        datasets: [{
-          label: 'TTM Squeeze Momentum',
-          data: this.ttmSqueezeData.histogram,
-          backgroundColor: this.ttmSqueezeData.histogram.map((value: number) => {
-            if (value === null) return 'rgba(128, 128, 128, 0.3)';
-            return value > 0 ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)';
-          }),
-          borderColor: this.ttmSqueezeData.histogram.map((value: number) => {
-            if (value === null) return 'rgba(128, 128, 128, 0.5)';
-            return value > 0 ? 'rgba(34, 197, 94, 1)' : 'rgba(239, 68, 68, 1)';
-          }),
-          borderWidth: 1,
-          borderSkipped: false,
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          },
-          title: {
-            display: false
-          },
-          zoom: {
-            pan: {
-              enabled: true,
-              mode: 'x',
-              modifierKey: 'ctrl'
-            },
-            zoom: {
-              wheel: {
-                enabled: true,
-                speed: 0.1
-              },
-              pinch: {
-                enabled: true
-              },
-              mode: 'x'
-            }
-          }
-        },
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Dates'
-            },
-            grid: {
-              display: false
-            }
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Momentum'
-            },
-            grid: {
-              color: 'rgba(0,0,0,0.1)'
-            },
-            ticks: {
-              callback: function(value) {
-                return typeof value === 'number' ? value.toFixed(2) : value;
-              }
-            }
-          }
-        }
-      }
-    };
-
-    this.histogramChart = new Chart(this.histogramCanvas.nativeElement, histogramConfig);
   }
 
   private groupDataByDate(): { [date: string]: { avgPrice: number, count: number } } {
@@ -348,22 +253,26 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
     lowerBand: number[], 
     momentum: number[], 
     squeeze: boolean[],
-    histogram: number[]
+    histogram: number[],
+    barColors: string[]
   } {
     const upperBand: number[] = [];
     const lowerBand: number[] = [];
     const momentum: number[] = [];
     const squeeze: boolean[] = [];
     const histogram: number[] = [];
+    const barColors: string[] = [];
+
+    // First pass: calculate raw momentum values
+    const rawMomentum: (number | null)[] = [];
 
     for (let i = 0; i < prices.length; i++) {
       if (i < period - 1) {
         // Not enough data points for the period
         upperBand.push(null as any);
         lowerBand.push(null as any);
-        momentum.push(null as any);
+        rawMomentum.push(null);
         squeeze.push(false);
-        histogram.push(null as any);
       } else {
         const slice = prices.slice(i - period + 1, i + 1);
         
@@ -390,23 +299,100 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
         upperBand.push(kcUpper);
         lowerBand.push(kcLower);
 
-        // TTM Squeeze Momentum: Difference between BB and KC
-        const bbWidth = bbUpper - bbLower;
-        const kcWidth = kcUpper - kcLower;
-        const squeezeMomentum = bbWidth - kcWidth;
-        momentum.push(squeezeMomentum);
-
         // Determine if in squeeze (BB inside KC)
         const isInSqueeze = bbUpper < kcUpper && bbLower > kcLower;
         squeeze.push(isInSqueeze);
 
-        // TTM Squeeze Histogram: Shows momentum with color coding
-        // Positive = green, Negative = red, Zero line = gray
-        histogram.push(squeezeMomentum);
+        // TTM Squeeze Momentum using Linear Regression
+        // Calculate: val = close - average(average(highest, lowest), SMA)
+        const highest = Math.max(...slice);
+        const lowest = Math.min(...slice);
+        const donchianMid = (highest + lowest) / 2;
+        const midpoint = (donchianMid + sma) / 2;
+        const val = prices[i] - midpoint;
+
+        // For linear regression, we need a series of values
+        // Build the value series for this lookback window
+        const valSeries: number[] = [];
+        for (let k = i - period + 1; k <= i; k++) {
+          if (k >= period - 1) {
+            const kSlice = prices.slice(k - period + 1, k + 1);
+            const kSma = kSlice.reduce((sum, p) => sum + p, 0) / period;
+            const kHighest = Math.max(...kSlice);
+            const kLowest = Math.min(...kSlice);
+            const kDonchianMid = (kHighest + kLowest) / 2;
+            const kMidpoint = (kDonchianMid + kSma) / 2;
+            valSeries.push(prices[k] - kMidpoint);
+          }
+        }
+
+        // Calculate Linear Regression value (endpoint of the regression line)
+        const linRegValue = this.linearRegression(valSeries);
+        rawMomentum.push(linRegValue);
       }
     }
 
-    return { upperBand, lowerBand, momentum, squeeze, histogram };
+    // Second pass: determine colors based on momentum value and direction
+    for (let i = 0; i < rawMomentum.length; i++) {
+      const currentMomentum = rawMomentum[i];
+      const prevMomentum = i > 0 ? rawMomentum[i - 1] : null;
+
+      if (currentMomentum === null) {
+        momentum.push(null as any);
+        histogram.push(null as any);
+        barColors.push('rgba(128, 128, 128, 0.5)');
+      } else {
+        momentum.push(currentMomentum);
+        histogram.push(currentMomentum);
+        
+        // Determine color based on momentum sign and direction
+        // Positive momentum: Blue (up) or Cyan (down)
+        // Negative momentum: Yellow (up) or Red (down)
+        const isPositive = currentMomentum >= 0;
+        const isIncreasing = prevMomentum !== null ? currentMomentum > prevMomentum : true;
+
+        if (isPositive) {
+          if (isIncreasing) {
+            barColors.push('#2196F3'); // Blue - Positive and Up
+          } else {
+            barColors.push('#00BCD4'); // Cyan - Positive and Down
+          }
+        } else {
+          if (isIncreasing) {
+            barColors.push('#FFEB3B'); // Yellow - Negative and Up
+          } else {
+            barColors.push('#F44336'); // Red - Negative and Down
+          }
+        }
+      }
+    }
+
+    return { upperBand, lowerBand, momentum, squeeze, histogram, barColors };
+  }
+
+  // Linear Regression - returns the endpoint value of the regression line
+  private linearRegression(values: number[]): number {
+    const n = values.length;
+    if (n === 0) return 0;
+    if (n === 1) return values[0];
+
+    let sumX = 0;
+    let sumY = 0;
+    let sumXY = 0;
+    let sumX2 = 0;
+
+    for (let i = 0; i < n; i++) {
+      sumX += i;
+      sumY += values[i];
+      sumXY += i * values[i];
+      sumX2 += i * i;
+    }
+
+    const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const intercept = (sumY - slope * sumX) / n;
+
+    // Return the value at the last point (endpoint of regression line)
+    return intercept + slope * (n - 1);
   }
 
   private calculateDemandSupplyZones(prices: number[], dates: string[]): void {
@@ -545,7 +531,7 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
         data: new Array(dates.length).fill(zone.price),
         borderColor: '#22c55e',
         backgroundColor: 'rgba(34, 197, 94, 0.2)',
-        borderWidth: 3,
+        borderWidth: 1,
         fill: '+1',
         tension: 0,
         pointRadius: 0,
@@ -563,7 +549,7 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
         data: new Array(dates.length).fill(zone.price),
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239, 68, 68, 0.2)',
-        borderWidth: 3,
+        borderWidth: 1,
         fill: '-1',
         tension: 0,
         pointRadius: 0,
@@ -575,292 +561,15 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
     });
   }
 
-  private calculateDMI(prices: number[], period: number): void {
-    this.dmiData = { plusDI: [], minusDI: [], adx: [] };
-    
-    if (prices.length < period + 1) {
-      // Not enough data for DMI calculation
-      for (let i = 0; i < prices.length; i++) {
-        this.dmiData.plusDI.push(null as any);
-        this.dmiData.minusDI.push(null as any);
-        this.dmiData.adx.push(null as any);
-      }
-      return;
-    }
-
-    // Calculate True Range (TR) for each period
-    const trueRanges: number[] = [];
-    for (let i = 1; i < prices.length; i++) {
-      const high = prices[i];
-      const low = prices[i];
-      const prevClose = prices[i - 1];
-      
-      const tr = Math.max(
-        high - low,
-        Math.abs(high - prevClose),
-        Math.abs(low - prevClose)
-      );
-      trueRanges.push(tr);
-    }
-
-    // Calculate Directional Movement
-    const plusDM: number[] = [];
-    const minusDM: number[] = [];
-    
-    for (let i = 1; i < prices.length; i++) {
-      const highDiff = prices[i] - prices[i - 1];
-      const lowDiff = prices[i - 1] - prices[i];
-      
-      if (highDiff > lowDiff && highDiff > 0) {
-        plusDM.push(highDiff);
-        minusDM.push(0);
-      } else if (lowDiff > highDiff && lowDiff > 0) {
-        plusDM.push(0);
-        minusDM.push(lowDiff);
-      } else {
-        plusDM.push(0);
-        minusDM.push(0);
-      }
-    }
-
-    // Calculate smoothed values using Wilder's smoothing
-    const smoothedTR = this.calculateWilderSmoothing(trueRanges, period);
-    const smoothedPlusDM = this.calculateWilderSmoothing(plusDM, period);
-    const smoothedMinusDM = this.calculateWilderSmoothing(minusDM, period);
-
-    // Calculate +DI and -DI
-    for (let i = 0; i < prices.length; i++) {
-      if (i < period) {
-        this.dmiData.plusDI.push(null as any);
-        this.dmiData.minusDI.push(null as any);
-        this.dmiData.adx.push(null as any);
-      } else {
-        const plusDI = (smoothedPlusDM[i - period] / smoothedTR[i - period]) * 100;
-        const minusDI = (smoothedMinusDM[i - period] / smoothedTR[i - period]) * 100;
-        
-        this.dmiData.plusDI.push(plusDI);
-        this.dmiData.minusDI.push(minusDI);
-
-        // Calculate DX (Directional Index)
-        const dx = Math.abs(plusDI - minusDI) / (plusDI + minusDI) * 100;
-        
-        if (i < period * 2 - 1) {
-          this.dmiData.adx.push(null as any);
-        } else {
-          // Calculate ADX (Average Directional Index)
-          const adxValues = this.dmiData.adx.filter(val => val !== null);
-          if (adxValues.length === 0) {
-            // First ADX value is the average of the first period DX values
-            let sum = 0;
-            let count = 0;
-            for (let j = i - period + 1; j <= i; j++) {
-              if (j >= period && j < this.dmiData.plusDI.length) {
-                const plusDIVal = this.dmiData.plusDI[j];
-                const minusDIVal = this.dmiData.minusDI[j];
-                if (plusDIVal !== null && minusDIVal !== null) {
-                  const dxVal = Math.abs(plusDIVal - minusDIVal) / (plusDIVal + minusDIVal) * 100;
-                  sum += dxVal;
-                  count++;
-                }
-              }
-            }
-            this.dmiData.adx.push(count > 0 ? sum / count : null as any);
-          } else {
-            // Subsequent ADX values use Wilder's smoothing
-            const prevADX = adxValues[adxValues.length - 1];
-            const newADX = ((prevADX * (period - 1)) + dx) / period;
-            this.dmiData.adx.push(newADX);
-          }
-        }
-      }
-    }
-  }
-
-  private calculateWilderSmoothing(values: number[], period: number): number[] {
-    const smoothed: number[] = [];
-    
-    // First smoothed value is the sum of the first period values
-    let sum = 0;
-    for (let i = 0; i < period && i < values.length; i++) {
-      sum += values[i];
-    }
-    smoothed.push(sum / Math.min(period, values.length));
-
-    // Subsequent values use Wilder's smoothing formula
-    for (let i = period; i < values.length; i++) {
-      const newValue = (smoothed[smoothed.length - 1] * (period - 1) + values[i]) / period;
-      smoothed.push(newValue);
-    }
-
-    return smoothed;
-  }
-
-  private createDMIChart(): void {
-    if (this.dmiChart) {
-      this.dmiChart.destroy();
-    }
-
-    if (!this.dmiData || !this.dmiCanvas || !this.dmiCanvas.nativeElement) {
-      console.warn('DMI canvas or data not available');
-      return;
-    }
-
-    const groupedData = this.groupDataByDate();
-    const dates = Object.keys(groupedData).sort();
-
-    const dmiConfig: ChartConfiguration = {
-      type: 'line',
-      data: {
-        labels: dates.map((date: string) => new Date(date).toLocaleDateString()),
-        datasets: [
-          {
-            label: '+DI (Positive Directional Indicator)',
-            data: this.dmiData.plusDI,
-            borderColor: '#22c55e',
-            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-            borderWidth: 2,
-            fill: false,
-            tension: 0.4,
-            pointRadius: 2,
-            pointHoverRadius: 4,
-            order: 1
-          },
-          {
-            label: '-DI (Negative Directional Indicator)',
-            data: this.dmiData.minusDI,
-            borderColor: '#ef4444',
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            borderWidth: 2,
-            fill: false,
-            tension: 0.4,
-            pointRadius: 2,
-            pointHoverRadius: 4,
-            order: 2
-          },
-          {
-            label: 'ADX (Average Directional Index)',
-            data: this.dmiData.adx,
-            borderColor: '#8b5cf6',
-            backgroundColor: 'rgba(139, 92, 246, 0.1)',
-            borderWidth: 3,
-            fill: false,
-            tension: 0.4,
-            pointRadius: 2,
-            pointHoverRadius: 4,
-            order: 3
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top' as const
-          },
-          title: {
-            display: false
-          },
-          zoom: {
-            pan: {
-              enabled: true,
-              mode: 'x',
-              modifierKey: 'ctrl'
-            },
-            zoom: {
-              wheel: {
-                enabled: true,
-                speed: 0.1
-              },
-              pinch: {
-                enabled: true
-              },
-              mode: 'x'
-            }
-          }
-        },
-        scales: {
-          x: {
-            display: true,
-            title: {
-              display: true,
-              text: 'Dates'
-            },
-            grid: {
-              display: false
-            }
-          },
-          y: {
-            display: true,
-            title: {
-              display: true,
-              text: 'DMI Values'
-            },
-            min: 0,
-            max: 100,
-            grid: {
-              color: 'rgba(0,0,0,0.1)'
-            },
-            ticks: {
-              callback: function(value) {
-                return typeof value === 'number' ? value.toFixed(1) + '%' : value;
-              }
-            }
-          }
-        },
-        elements: {
-          point: {
-            backgroundColor: (context: any) => {
-              const datasetIndex = context.datasetIndex;
-              const value = context.parsed.y;
-              if (value === null) return 'rgba(128, 128, 128, 0.5)';
-              
-              if (datasetIndex === 0) return '#22c55e'; // +DI - green
-              if (datasetIndex === 1) return '#ef4444'; // -DI - red
-              if (datasetIndex === 2) {
-                // ADX - purple, but darker for strong trends
-                return value >= 25 ? '#7c3aed' : '#a78bfa';
-              }
-              return '#8b5cf6';
-            },
-            borderColor: (context: any) => {
-              const datasetIndex = context.datasetIndex;
-              const value = context.parsed.y;
-              if (value === null) return 'rgba(128, 128, 128, 0.8)';
-              
-              if (datasetIndex === 0) return '#16a34a'; // +DI - darker green
-              if (datasetIndex === 1) return '#dc2626'; // -DI - darker red
-              if (datasetIndex === 2) {
-                // ADX - darker purple for strong trends
-                return value >= 25 ? '#6d28d9' : '#8b5cf6';
-              }
-              return '#7c3aed';
-            }
-          }
-        }
-      }
-    };
-
-    this.dmiChart = new Chart(this.dmiCanvas.nativeElement, dmiConfig);
-  }
-
   private clearChart(): void {
     if (this.chart) {
       this.chart.destroy();
       this.chart = null;
     }
-    if (this.histogramChart) {
-      this.histogramChart.destroy();
-      this.histogramChart = null;
-    }
-    if (this.dmiChart) {
-      this.dmiChart.destroy();
-      this.dmiChart = null;
-    }
     this.ttmSqueezeData = null;
     this.demandSupplyZones = { demand: [], supply: [] };
-    this.dmiData = { plusDI: [], minusDI: [], adx: [] };
+    this.priceData = [];
+    this.chartDates = [];
   }
 
   getDateRange(): string {
@@ -903,23 +612,8 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
     return minPrice === maxPrice ? `$${minPrice}` : `$${minPrice} - $${maxPrice}`;
   }
 
-  getTTMSqueezeInfo(): string {
-    if (!this.data || this.data.length === 0 || !this.ttmSqueezeData) {
-      return 'N/A';
-    }
-
-    // Get the latest valid TTM Squeeze values
-    const lastIndex = this.ttmSqueezeData.upperBand.length - 1;
-    if (lastIndex >= 0 && this.ttmSqueezeData.upperBand[lastIndex] !== null) {
-      const upper = this.ttmSqueezeData.upperBand[lastIndex]!.toFixed(2);
-      const lower = this.ttmSqueezeData.lowerBand[lastIndex]!.toFixed(2);
-      const momentum = this.ttmSqueezeData.momentum[lastIndex]!.toFixed(2);
-      const isInSqueeze = this.ttmSqueezeData.squeeze[lastIndex];
-      const squeezeStatus = isInSqueeze ? 'IN SQUEEZE' : 'NO SQUEEZE';
-      return `Upper: $${upper} | Lower: $${lower} | Momentum: ${momentum} | Status: ${squeezeStatus}`;
-    }
-
-    return 'N/A';
+  onTtmSqueezeInfoChange(info: string): void {
+    this.ttmSqueezeInfo = info;
   }
 
   getDemandSupplyZonesInfo(): string {
@@ -945,46 +639,12 @@ export class ChartPricePutComponent implements OnInit, OnChanges, AfterViewInit,
     return info;
   }
 
-  getDMIInfo(): string {
-    if (!this.dmiData || this.dmiData.plusDI.length === 0) {
-      return 'N/A';
-    }
-
-    const validPlusDI = this.dmiData.plusDI.filter(value => value !== null);
-    const validMinusDI = this.dmiData.minusDI.filter(value => value !== null);
-    const validADX = this.dmiData.adx.filter(value => value !== null);
-
-    if (validPlusDI.length === 0 || validMinusDI.length === 0) {
-      return 'N/A';
-    }
-
-    const currentPlusDI = validPlusDI[validPlusDI.length - 1];
-    const currentMinusDI = validMinusDI[validMinusDI.length - 1];
-    const currentADX = validADX.length > 0 ? validADX[validADX.length - 1] : 0;
-
-    const plusDIValue = currentPlusDI.toFixed(1);
-    const minusDIValue = currentMinusDI.toFixed(1);
-    const adxValue = currentADX.toFixed(1);
-
-    let trend = 'Neutral';
-    let strength = 'Weak';
-    
-    if (currentPlusDI > currentMinusDI) {
-      trend = 'Bullish';
-    } else if (currentMinusDI > currentPlusDI) {
-      trend = 'Bearish';
-    }
-
-    if (currentADX >= 25) {
-      strength = 'Strong';
-    } else if (currentADX >= 20) {
-      strength = 'Moderate';
-    }
-
-    return `+DI: ${plusDIValue}% | -DI: ${minusDIValue}% | ADX: ${adxValue}% | ${trend} (${strength})`;
+  onDmiInfoChange(info: string): void {
+    this.dmiInfo = info;
   }
 
   ngOnDestroy(): void {
     this.clearChart();
   }
 }
+

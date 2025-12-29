@@ -1,0 +1,25 @@
+.bollinger-keltner-chart {
+  width: 100%;
+
+  .chart-canvas-wrapper {
+    position: relative;
+    min-height: 400px;
+    padding: 10px;
+
+    canvas {
+      max-width: 100%;
+      height: auto !important;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .bollinger-keltner-chart {
+    .chart-canvas-wrapper {
+      min-height: 300px;
+      padding: 8px;
+    }
+  }
+}
+

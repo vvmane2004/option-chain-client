@@ -1,4 +1,4 @@
-<div class="chart-price-put">
+<div class="chart-price-container-2">
   <!-- Chart Header -->
   <div class="chart-header">
     <h3>Price with TTM Squeeze</h3>
@@ -35,47 +35,25 @@
   </div>
 
       <!-- TTM Squeeze Histogram -->
-      <div class="ttm-squeeze-histogram" *ngIf="!loading && !error && data && data.length > 0">
-        <div class="histogram-header">
-          <h4>TTM Squeeze Histogram</h4>
-          <div class="histogram-legend">
-            <span class="legend-item">
-              <span class="legend-color positive"></span>
-              Positive Momentum
-            </span>
-            <span class="legend-item">
-              <span class="legend-color negative"></span>
-              Negative Momentum
-            </span>
-          </div>
-        </div>
-        <div class="histogram-chart">
-          <canvas #histogramCanvas></canvas>
-        </div>
+      <div class="ttm-squeeze-wrapper" *ngIf="!loading && !error && data && data.length > 0">
+        <app-chart-ttm-squeeze 
+          [squeezeData]="ttmSqueezeData"
+          [dates]="chartDates"
+          [period]="20"
+          [kcMultiplier]="1.5"
+          [bbMultiplier]="2.0"
+          (ttmSqueezeInfoChange)="onTtmSqueezeInfoChange($event)">
+        </app-chart-ttm-squeeze>
       </div>
 
       <!-- DMI Chart -->
-      <div class="dmi-chart" *ngIf="!loading && !error && data && data.length > 0">
-        <div class="dmi-header">
-          <h4>DMI (14) - Directional Movement Indicator</h4>
-          <div class="dmi-legend">
-            <span class="legend-item">
-              <span class="legend-color plus-di"></span>
-              +DI (Bullish)
-            </span>
-            <span class="legend-item">
-              <span class="legend-color minus-di"></span>
-              -DI (Bearish)
-            </span>
-            <span class="legend-item">
-              <span class="legend-color adx"></span>
-              ADX (Strength)
-            </span>
-          </div>
-        </div>
-        <div class="dmi-chart-canvas">
-          <canvas #dmiCanvas></canvas>
-        </div>
+      <div class="dmi-chart-wrapper" *ngIf="!loading && !error && data && data.length > 0">
+        <app-chart-dmi 
+          [priceData]="priceData" 
+          [dates]="chartDates" 
+          [length]="14"
+          (dmiInfoChange)="onDmiInfoChange($event)">
+        </app-chart-dmi>
       </div>
 
   <!-- Data Summary -->
@@ -94,7 +72,7 @@
     </div>
     <div class="summary-item ttm-squeeze-info">
       <span class="label">TTM Squeeze (20,1.5,2.0):</span>
-      <span class="value">{{ getTTMSqueezeInfo() }}</span>
+      <span class="value">{{ ttmSqueezeInfo }}</span>
     </div>
         <div class="summary-item demand-supply-info">
           <span class="label">Demand & Supply Zones:</span>
@@ -102,7 +80,8 @@
         </div>
         <div class="summary-item dmi-info">
           <span class="label">DMI (14):</span>
-          <span class="value">{{ getDMIInfo() }}</span>
+          <span class="value">{{ dmiInfo }}</span>
         </div>
       </div>
     </div>
+

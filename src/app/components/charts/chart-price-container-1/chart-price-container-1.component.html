@@ -1,4 +1,4 @@
-<div class="chart-price-call">
+<div class="chart-price-container-1">
   <!-- Chart Header -->
   <div class="chart-header">
     <h3>Price with Bollinger Bands & Keltner Channels</h3>
@@ -29,61 +29,43 @@
     <p>No underlying price data available</p>
   </div>
 
-  <!-- Chart Canvas -->
+  <!-- Price Chart with Bollinger Bands & Keltner Channels -->
   <div class="chart-wrapper" *ngIf="!loading && !error && data && data.length > 0">
-    <canvas #chartCanvas></canvas>
+    <app-chart-bollinger-keltner
+      [priceData]="priceData"
+      [dates]="chartDates"
+      [symbol]="symbol || ''"
+      [bollingerPeriod]="20"
+      [bollingerStdDev]="2"
+      [keltnerPeriod]="20"
+      [keltnerMultiplier]="2"
+      (bollingerInfoChange)="onBollingerInfoChange($event)"
+      (keltnerInfoChange)="onKeltnerInfoChange($event)">
+    </app-chart-bollinger-keltner>
   </div>
 
   <!-- RSI Chart -->
-  <div class="rsi-chart" *ngIf="!loading && !error && data && data.length > 0">
-    <div class="rsi-header">
-      <h4>RSI (14) - Relative Strength Index</h4>
-      <div class="rsi-legend">
-        <span class="legend-item">
-          <span class="legend-color overbought"></span>
-          Overbought (≥70)
-        </span>
-        <span class="legend-item">
-          <span class="legend-color oversold"></span>
-          Oversold (≤30)
-        </span>
-        <span class="legend-item">
-          <span class="legend-color neutral"></span>
-          Neutral (30-70)
-        </span>
-      </div>
-    </div>
-    <div class="rsi-chart-canvas">
-      <canvas #rsiCanvas></canvas>
-    </div>
+  <div class="rsi-chart-wrapper" *ngIf="!loading && !error && data && data.length > 0">
+    <app-chart-rsi 
+      [priceData]="priceData" 
+      [dates]="chartDates" 
+      [period]="14"
+      [overbought]="70"
+      [oversold]="30"
+      (rsiInfoChange)="onRsiInfoChange($event)">
+    </app-chart-rsi>
   </div>
 
   <!-- MACD Chart -->
-  <div class="macd-chart" *ngIf="!loading && !error && data && data.length > 0">
-    <div class="macd-header">
-      <h4>MACD (12,26,9) - Moving Average Convergence Divergence</h4>
-      <div class="macd-legend">
-        <span class="legend-item">
-          <span class="legend-color macd-line"></span>
-          MACD Line
-        </span>
-        <span class="legend-item">
-          <span class="legend-color signal-line"></span>
-          Signal Line
-        </span>
-        <span class="legend-item">
-          <span class="legend-color histogram-positive"></span>
-          Histogram (+)
-        </span>
-        <span class="legend-item">
-          <span class="legend-color histogram-negative"></span>
-          Histogram (-)
-        </span>
-      </div>
-    </div>
-    <div class="macd-chart-canvas">
-      <canvas #macdCanvas></canvas>
-    </div>
+  <div class="macd-chart-wrapper" *ngIf="!loading && !error && data && data.length > 0">
+    <app-chart-macd 
+      [priceData]="priceData" 
+      [dates]="chartDates" 
+      [fastPeriod]="12"
+      [slowPeriod]="26"
+      [signalPeriod]="9"
+      (macdInfoChange)="onMacdInfoChange($event)">
+    </app-chart-macd>
   </div>
 
   <!-- Data Summary -->
@@ -102,19 +84,20 @@
     </div>
     <div class="summary-item bollinger-info">
       <span class="label">Bollinger Bands (20,2):</span>
-      <span class="value">{{ getBollingerBandsInfo() }}</span>
+      <span class="value">{{ bollingerInfo }}</span>
     </div>
     <div class="summary-item keltner-info">
       <span class="label">Keltner Channels (20,2):</span>
-      <span class="value">{{ getKeltnerChannelsInfo() }}</span>
+      <span class="value">{{ keltnerInfo }}</span>
     </div>
     <div class="summary-item macd-info">
       <span class="label">MACD (12,26,9):</span>
-      <span class="value">{{ getMACDInfo() }}</span>
+      <span class="value">{{ macdInfo }}</span>
     </div>
     <div class="summary-item rsi-info">
       <span class="label">RSI (14):</span>
-      <span class="value">{{ getRSIInfo() }}</span>
+      <span class="value">{{ rsiInfo }}</span>
     </div>
   </div>
 </div>
+

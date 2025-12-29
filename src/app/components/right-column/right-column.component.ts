@@ -2,8 +2,8 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { formatExpirationDate } from '../../utils/date.utils';
 import { ChartOpeninterestComponent } from '../charts/chart-openinterest/chart-openinterest.component';
-import { ChartPriceCallComponent } from '../charts/chart-price-call/chart-price-call.component';
-import { ChartPricePutComponent } from '../charts/chart-price-put/chart-price-put.component';
+import { ChartPriceContainer1Component } from '../charts/chart-price-container-1/chart-price-container-1.component';
+import { ChartPriceContainer2Component } from '../charts/chart-price-container-2/chart-price-container-2.component';
 import { ChartPremiumComponent } from '../charts/chart-premium/chart-premium.component';
 import { ChartVolumeComponent } from '../charts/chart-volume/chart-volume.component';
 
@@ -11,7 +11,7 @@ import { ChartVolumeComponent } from '../charts/chart-volume/chart-volume.compon
 @Component({
   selector: 'app-right-column',
   standalone: true,
-  imports: [CommonModule, ChartOpeninterestComponent, ChartPriceCallComponent, ChartPricePutComponent, ChartPremiumComponent, ChartVolumeComponent],
+  imports: [CommonModule, ChartOpeninterestComponent, ChartPriceContainer1Component, ChartPriceContainer2Component, ChartPremiumComponent, ChartVolumeComponent],
   templateUrl: './right-column.component.html',
   styleUrl: './right-column.component.scss'
 })

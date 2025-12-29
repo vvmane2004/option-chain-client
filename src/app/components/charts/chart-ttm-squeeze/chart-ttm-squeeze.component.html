@@ -1,0 +1,39 @@
+<div class="ttm-squeeze-chart">
+  <div class="histogram-header">
+    <h4>TTM Squeeze ({{ period }}, {{ kcMultiplier }}, {{ bbMultiplier }})</h4>
+    <div class="histogram-legend">
+      <span class="legend-item">
+        <span class="legend-color negative-down"></span>
+        Neg & Down
+      </span>
+      <span class="legend-item">
+        <span class="legend-color negative-up"></span>
+        Neg & Up
+      </span>
+      <span class="legend-item">
+        <span class="legend-color positive-down"></span>
+        Pos & Down
+      </span>
+      <span class="legend-item">
+        <span class="legend-color positive-up"></span>
+        Pos & Up
+      </span>
+      <span class="legend-separator">|</span>
+      <span class="legend-item">
+        <span class="legend-dot squeeze-on"></span>
+        Squeeze On
+      </span>
+      <span class="legend-item">
+        <span class="legend-dot squeeze-off"></span>
+        Squeeze Off
+      </span>
+    </div>
+  </div>
+  <div class="histogram-chart">
+    <canvas #histogramCanvas></canvas>
+  </div>
+  <div class="ttm-info">
+    <span class="info-text">{{ getTTMSqueezeInfo() }}</span>
+  </div>
+</div>
+
